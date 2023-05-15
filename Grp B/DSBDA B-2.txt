@@ -1,0 +1,283 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+
+data = pd.read_csv('Datasets/heart.csv')
+
+data.head()
+
+data.tail()
+
+data.shape
+
+data.info()
+
+#Data preprocessing
+data.describe()
+
+#checking for null value
+data.isnull().sum()
+
+# Check duplicate values
+duplicate_rows = data[data.duplicated()]
+duplicate_sort = duplicate_rows.sort_values(by=['age'])
+print(duplicate_sort)
+
+data.duplicated().sum()
+
+#checking outliers
+#trestbps outliers
+plt.figure(figsize=(10,3))
+sns.boxplot(data['trestbps'])
+
+q1 = data['trestbps'].quantile(0.25)
+q3 = data['trestbps'].quantile(0.75)
+IQR = q3 - q1
+lower_limit = q1 - 1.5 * IQR
+upper_limit = q3 + 1.5 * IQR
+data = data[(data['trestbps'] > lower_limit) & (data['trestbps'] < upper_limit)]
+plt.figure(figsize=(10,3))
+sns.boxplot(data['trestbps'])
+
+#chol
+plt.figure(figsize=(10,3))
+sns.boxplot(data['chol'])
+
+q1 = data['chol'].quantile(0.25)
+q3 = data['chol'].quantile(0.75)
+IQR = q3 - q1
+lower_limit = q1 - 1.5 * IQR
+upper_limit = q3 + 1.5 * IQR
+data = data[(data['chol'] > lower_limit) & (data['chol'] < upper_limit)]
+plt.figure(figsize=(10,3))
+sns.boxplot(data['chol'])
+
+#thalach
+plt.figure(figsize=(10,3))
+sns.boxplot(data['thalach'])
+
+q1 = data['thalach'].quantile(0.25)
+q3 = data['thalach'].quantile(0.75)
+IQR = q3 - q1
+lower_limit = q1 - 1.5 * IQR
+upper_limit = q3 + 1.5 * IQR
+data = data[(data['thalach'] > lower_limit) & (data['thalach'] < upper_limit)]
+plt.figure(figsize=(10,3))
+sns.boxplot(data['thalach'])
+
+q1 = data['thalach'].quantile(0.25)
+q3 = data['thalach'].quantile(0.75)
+IQR = q3 - q1
+lower_limit = q1 - 1.5 * IQR
+upper_limit = q3 + 1.5 * IQR
+data = data[(data['thalach'] > lower_limit) & (data['thalach'] < upper_limit)]
+plt.figure(figsize=(10,3))
+sns.boxplot(data['thalach'])
+
+q1 = data['oldpeak'].quantile(0.25)
+q3 = data['oldpeak'].quantile(0.75)
+IQR = q3 - q1
+lower_limit = q1 - 1.5 * IQR
+upper_limit = q3 + 1.5 * IQR
+data = data[(data['oldpeak'] > lower_limit) & (data['oldpeak'] < upper_limit)]
+plt.figure(figsize=(10,3))
+sns.boxplot(data['oldpeak'])
+
+plt.figure(figsize=(15,6))
+sns.boxplot(data=data, orient='h')
+
+# Checking for balanced dataset 
+data['target'].value_counts()
+
+#EDA
+#Heatmap Correlation
+import seaborn as sns
+
+# Set up the matplotlib figure
+f, ax = plt.subplots(figsize=(30, 25))
+
+corr = data.corr()
+
+matt = data.corr()
+mask = np.zeros_like(corr, dtype=np.bool)
+# Generate a custom diverging colormap
+cmap = sns.diverging_palette(230,20, as_cmap=True)
+# Draw the heatmap with the mask and correct aspect ratio
+sns.heatmap(matt, mask=mask,cmap=cmap, vmax=1, center=0, annot =True,
+            square=True, linewidths=.7, cbar_kws={"shrink": .5})
+plt.xticks(rotation=90, fontsize=15)
+plt.yticks(fontsize=15)
+plt.show()
+
+# slope vs target (plt.scatter(X,Y))
+sns.lmplot(data=data, x="slope", y="target")
+
+# thalach vs target (plt.scatter(X,Y))
+sns.lmplot(data=data, x="thalach", y="target")
+
+# restecg vs target (plt.scatter(X,Y))
+sns.lmplot(data=data, x="restecg", y="target")
+
+# cp vs target (plt.scatter(X,Y))
+sns.lmplot(data=data, x="cp", y="target")
+
+sns.pairplot(data=data, hue="target")
+
+x=data.drop('target',axis=1)
+x
+
+y=data['target']
+y
+
+#Univariate selection for categorical variable
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
+bestfeatures = SelectKBest(score_func=chi2)
+
+fit = bestfeatures.fit(x,y)
+scores = pd.DataFrame(fit.scores_)
+
+dfcolumns = pd.DataFrame(x.columns)
+
+featureScores = pd.concat([dfcolumns,scores],axis=1)
+featureScores.columns = ['Label','Score'] 
+
+featureScores.sort_values(by='Score',ascending=False)
+
+# Feature Engg
+new_sex=pd.get_dummies(data=data['sex'],prefix='sex')
+new_sex
+
+
+new_cp=pd.get_dummies(data['cp'],prefix='chestPain')
+new_cp
+
+new_exang=pd.get_dummies(data['exang'],prefix='exang')
+new_exang
+
+new_slope=pd.get_dummies(data['slope'],prefix='slope')
+new_slope
+
+new_thal=pd.get_dummies(data['thal'],prefix='thal')
+new_thal
+
+new_ca=pd.get_dummies(data['ca'],prefix='ca')
+new_ca
+
+app=[data,new_sex,new_cp,new_ca,new_thal,new_exang,new_slope]
+
+df1=pd.concat(app,axis=1)
+
+df1.head()
+
+df1.drop(['sex','cp','thal','exang','ca','slope'],axis=1,inplace=True)
+
+# FEature Scaling
+from sklearn.preprocessing import StandardScaler
+sc=StandardScaler()
+
+df1[['age','trestbps','chol','oldpeak','thalach']]=sc.fit_transform(df1[['age','trestbps','chol','oldpeak','thalach']])
+
+X=df1.drop('target',axis=1)
+X
+
+Y=df1['target']
+Y
+
+scaler = StandardScaler()
+scaler.fit(X)
+X_scaled = scaler.transform(X)
+
+from sklearn.model_selection import train_test_split
+
+#X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size = 0.2, random_state = 42)
+
+
+print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
+
+#Cross validation 
+#Logistic Regression
+
+from sklearn.datasets import load_iris
+from sklearn.model_selection import cross_val_score,KFold
+from sklearn.linear_model import LogisticRegression
+iris=load_iris()
+X=X_train
+Y=y_train
+logreg=LogisticRegression()
+kf=KFold(n_splits=5)
+score=cross_val_score(logreg,X,Y,cv=kf)
+print("Cross Validation Scores are {}".format(score))
+print("Average Cross Validation score :{}".format(score.mean()))
+
+#DecisionTree
+
+from sklearn import datasets
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import KFold, cross_val_score
+
+#X, y = datasets.load_iris(return_X_y=True)
+
+clf = DecisionTreeClassifier(random_state=42)
+
+k_folds = KFold(n_splits = 5)
+
+scores = cross_val_score(clf, X_train, y_train, cv = k_folds)
+
+print("Cross Validation Scores: ", scores)
+print("Average CV Score: ", scores.mean())
+print("Number of CV Scores used in Average: ", len(scores))
+
+#Modelling
+#Logistic Regression
+from sklearn.linear_model import LogisticRegression
+
+logreg = LogisticRegression()
+logreg.fit(X_train,y_train)
+
+print("Logistic Regression train score : {:.4f}".format(logreg.score(X_train, y_train)))
+print("Logistic Regression test score : {:.4f}".format(logreg.score(X_test, y_test)))
+
+#Decision Tree
+from sklearn.tree import DecisionTreeClassifier
+
+tree = DecisionTreeClassifier(max_depth=8, random_state=0)
+tree.fit(X_train, y_train)
+
+print("Decision Tree train score : {:.4f}".format(tree.score(X_train, y_train)))
+print("Decision Tree test score : {:.4f}".format(tree.score(X_test, y_test)))
+
+#Model Evaluation
+print("Logistic Regression test score : {:.4f}".format(logreg.score(X_test, y_test)))
+print("Decision Tree test score {:.4f}".format(tree.score(X_test, y_test)))
+
+pred_logreg = logreg.predict(X_test)
+pred_tree = tree.predict(X_test)
+
+from sklearn.metrics import confusion_matrix
+
+cm_logreg = confusion_matrix(y_test, pred_logreg)
+cm_tree = confusion_matrix(y_test, pred_tree)
+
+plt.subplot(1,5,2)
+plt.title("Logistic Regression")
+sns.heatmap(cm_logreg, annot=True, cmap="Reds", fmt="d", cbar=False, annot_kws={"size": 12})
+
+plt.subplot(1,5,5)
+plt.title("Decision Tree")
+sns.heatmap(cm_tree, annot=True, cmap="Reds", fmt="d", cbar=False, annot_kws={"size": 12})
+
+plt.show()
+
+from sklearn.metrics import classification_report
+
+print('------------------------------------------------------------------\n\nLogistic Regression')
+print('------------------------------------------------------------------')
+print(classification_report(y_test, pred_logreg, target_names=["Have Disease", "Don't have Disease"]))
+print('------------------------------------------------------------------\n\nDecision Tree')
+print('------------------------------------------------------------------')
+print(classification_report(y_test, pred_tree, target_names=["Have Disease", "Don't have Disease"]))

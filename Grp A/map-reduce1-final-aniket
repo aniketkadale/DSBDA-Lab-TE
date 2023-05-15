@@ -1,0 +1,31 @@
+  333  start-all.sh
+  353  jps
+
+       mkdir aniket
+  334  mv sample.txt aniket
+  335  ls
+  336  cd aniket
+  337  ls
+  338  cd aniket/
+  339  cd ~
+  340  sudo nano ProcessUnits.java
+  341  javac -cp `hadoop classpath` -d aniket ProcessUnits.java
+  342  jar -cvf aniket.jar -C aniket/ .
+  343  ls
+  344  hadoop fs -mkdir input_aniket
+  345  hadoop dfs -mkdir input_aniket
+  346
+  349
+  350 
+  351 
+  352  
+  354  hadoop dfs -mkdir input_aniket (use one of the following if got error)
+  355  hadoop dfs -mkdir -p input_aniket 
+  356  hadoop fs -mkdir -p input_aniket
+
+  357  hadoop fs -put aniket/sample.txt input_aniket
+  358  ls
+  359  hadoop fs -ls
+  360  hadoop jar aniket.jar hadoop.ProcessUnits input_aniket output_aniket
+  361  hadoop fs -cat output_aniket/part-00000
+
