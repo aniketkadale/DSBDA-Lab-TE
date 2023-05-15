@@ -1,0 +1,35 @@
+// Part B - 1
+
+import pandas as pd 
+import numpy as np
+
+data = pd.read_csv("/content/dataset_Facebook.csv", sep = ';')
+
+data.head()
+data.describe()
+
+# creating subsets
+subset1 = data[['Page total likes', 'Category', 'Post Month', 'Post Weekday']].loc[0:15]
+subset1
+
+subset2 = data[['Page total likes', 'Category', 'Post Month', 'Post Weekday']].loc[16:30]
+subset2
+
+#merging data
+merged = pd.concat([subset1, subset2])
+merged
+
+#Sorting the merged data in ascending order. Make ascending = False to sort in descending
+sortedData = merged.sort_values("Page total likes")
+sortedData
+
+# Transpose
+transposedData = data.transpose()
+transposedData
+
+# Shaping the data i.e printint rows and cols
+shapedData = data.shape
+
+# Reshaping
+reshaping = pd.pivot_table(data, index = ['Type', 'Category'], values = 'like')
+reshaping

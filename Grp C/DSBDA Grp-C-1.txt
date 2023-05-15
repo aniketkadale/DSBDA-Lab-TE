@@ -1,0 +1,38 @@
+import requests #to make https requests
+import bs4
+
+request1 = requests.get("https://www.flipkart.com/apple-iphone-13-starlight-128-gb/p/itmc9604f122ae7f?pid=MOBG6VF5ADKHKXFX&lid=LSTMOBG6VF5ADKHKXFXQGX7PK&marketplace=FLIPKART&fm=personalisedRecommendation%2Fp2p-same&iid=R%3As%3Bp%3AMOBG73E7GKQK4KZP%3Bpt%3Ahp%3Buid%3A70a82b0a-f347-11ed-9f0d-351aa2a6862c%3B.MOBG6VF5ADKHKXFX&ssid=50eshy8nq80000001684172368886&otracker=hp_reco_Suggested%2Bfor%2BYou_3_8.productCard.PMU_V2_APPLE%2BiPhone%2B13%2B%2528Starlight%252C%2B128%2BGB%2529_MOBG6VF5ADKHKXFX_personalisedRecommendation%2Fp2p-same_2&otracker1=hp_reco_WHITELISTED_personalisedRecommendation%2Fp2p-same_Suggested%2Bfor%2BYou_DESKTOP_HORIZONTAL_productCard_cc_3_NA_view-all&cid=MOBG6VF5ADKHKXFX")
+request1
+
+
+request1.content
+
+soup = bs4.BeautifulSoup(request1.text)
+
+# Fetching reviews/content
+reviews = soup.findAll('div', {'class' : 't-ZTKy'})
+for review in reviews:
+    print(review.get_text() + "\n\n")
+
+
+# Average overall rating
+rating = soup.find('div', {'class' : '_2d4LTz'}).get_text()
+print(rating)
+
+
+# Individual ratings
+individualRating = soup.findAll('div', {'class' : '_3LWZlK'})
+for iRating in individualRating : 
+    print(iRating.get_text() + "\n")
+
+
+#comment tags // here tags are not available for the product, but you can use the following snippet
+tags = soup.find('span', {'class' : "yourclassname"}).get_text()
+tags
+
+
+
+# customer names
+customers = soup.findAll('p', {'class' : '_2sc7ZR'})
+for eachcustomer in customers : 
+    print(eachcustomer.get_text() + 'n')
